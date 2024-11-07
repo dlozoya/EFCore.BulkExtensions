@@ -26,6 +26,10 @@ public enum SqlType
     ///  Indicates database is MySQL
     /// </summary>
     MySql,
+    /// <summary>
+    ///  Indicates database is Oracle
+    /// </summary>
+    Oracle,
 }
 
 #pragma warning disable CS1591 // No XML comment required here
@@ -62,9 +66,13 @@ public static class SqlAdaptersMapping
             {
                 databaseType = SqlType.MySql;
             }
-            else if(ProviderName?.EndsWith(SqlType.Sqlite.ToString(), ignoreCase) ?? false) // ProviderName: Microsoft.EntityFrameworkCore.Sqlite
+            else if (ProviderName?.EndsWith(SqlType.Sqlite.ToString(), ignoreCase) ?? false) // ProviderName: Microsoft.EntityFrameworkCore.Sqlite
             {
                 databaseType = SqlType.Sqlite;
+            }
+            else if (ProviderName?.StartsWith(SqlType.Oracle.ToString(), ignoreCase) ?? false) // ProviderName: Oracle.EntityFrameworkCore
+            {
+                databaseType = SqlType.Oracle;
             }
 
             if (_dbServer == null || _dbServer.Type != databaseType)
@@ -87,6 +95,10 @@ public static class SqlAdaptersMapping
                 else if (databaseType == SqlType.Sqlite)
                 {
                     dbServerType = Type.GetType(namespaceSqlAdaptersTEXT + ".Sqlite.SqliteDbServer,EFCore.BulkExtensions.Sqlite");
+                }
+                else if (databaseType == SqlType.Oracle)
+                {
+                    dbServerType = Type.GetType(namespaceSqlAdaptersTEXT + ".Oracle.OracleDbServer,EFCore.BulkExtensions.Oracle");
                 }
 
                 var dbServerInstance = Activator.CreateInstance(dbServerType ?? typeof(int));
